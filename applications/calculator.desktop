@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Calculator
+Exec=/usr/share/APPLaunch/bin/M5CardputerZero-Calculator
+Terminal=false
+Icon=share/images/calculator.png
+Type=Application
