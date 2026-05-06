@@ -1,0 +1,62 @@
+import os
+
+Import("env")
+with open(env["PROJECT_TOOL_S"]) as f:
+    exec(f.read())
+
+
+SRCS = Glob("src/*.c*")
+INCLUDE = [ADir("."), ADir("include")]
+PRIVATE_INCLUDE = []
+REQUIREMENTS = ["lvgl_component", "pthread"]
+STATIC_LIB = []
+DYNAMIC_LIB = []
+DEFINITIONS = []
+DEFINITIONS_PRIVATE = []
+LDFLAGS = []
+LINK_SEARCH_PATH = []
+STATIC_FILES = []
+
+# 添加ui目录
+SRCS += append_srcs_dir(ADir("ui"))
+INCLUDE += ["ui"]
+
+
+# 为 lvgl_component 添加 SDL2 依赖
+lvgl_component = list(
+    filter(lambda x: x["target"] == "lvgl_component", env["COMPONENTS"])
+)[0]
+if "CONFIG_V9_5_LV_USE_SDL" in os.environ:
+    lvgl_component["REQUIREMENTS"] += ["SDL2"]
+    sdl_include_candidates = [
+        "/usr/include/SDL2",
+        "/opt/homebrew/include",
+        "/opt/homebrew/include/SDL2",
+    ]
+    lvgl_component["INCLUDE"] += [path for path in sdl_include_candidates if os.path.exists(path)]
+    if os.path.exists("/opt/homebrew/lib"):
+        lvgl_component.setdefault("LINK_SEARCH_PATH", [])
+        lvgl_component["LINK_SEARCH_PATH"] += ["/opt/homebrew/lib"]
+    lvgl_component["DEFINITIONS"] += ["-D_REENTRANT"]
+
+if "CONFIG_TINYALSA_COMPONENT_ENABLED" in os.environ:
+    REQUIREMENTS += ["tinyalsa_component"]
+
+
+env["COMPONENTS"].append(
+    {
+        "target": "M5CardputerZero-Calculator",
+        "SRCS": SRCS,
+        "INCLUDE": INCLUDE,
+        "PRIVATE_INCLUDE": PRIVATE_INCLUDE,
+        "REQUIREMENTS": REQUIREMENTS,
+        "STATIC_LIB": STATIC_LIB,
+        "DYNAMIC_LIB": DYNAMIC_LIB,
+        "DEFINITIONS": DEFINITIONS,
+        "DEFINITIONS_PRIVATE": DEFINITIONS_PRIVATE,
+        "LDFLAGS": LDFLAGS,
+        "LINK_SEARCH_PATH": LINK_SEARCH_PATH,
+        "STATIC_FILES": STATIC_FILES,
+        "REGISTER": "project",
+    }
+)

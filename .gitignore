@@ -1,0 +1,31 @@
+# Build outputs
+/build/
+/dist/
+/static_lib
+
+# Test outputs
+/tests/build/
+/tests/artifacts/
+*.log
+*.state
+
+# SCons generated files
+.sconsign.dblite
+*.pyc
+__pycache__/
+
+# Compiled artifacts
+*.a
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
