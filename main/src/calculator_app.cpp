@@ -30,6 +30,8 @@ constexpr lv_coord_t kDisplayHeight = 34;
 constexpr lv_coord_t kDisplayInnerLeftPadding = 10;
 constexpr lv_coord_t kDisplayInnerRightPadding = 8;
 constexpr lv_coord_t kDisplayMiddleGap = 8;
+constexpr lv_coord_t kDisplayLabelY = 6;
+constexpr lv_coord_t kDisplayLabelHeight = 22;
 constexpr lv_coord_t kResultAreaPadding = 4;
 constexpr lv_coord_t kResultAreaMinWidth = 72;
 constexpr lv_coord_t kPadX = 6;
@@ -215,24 +217,24 @@ private:
         lv_obj_clear_flag(display_panel_, LV_OBJ_FLAG_SCROLLABLE);
 
         expression_label_ = lv_label_create(display_panel_);
-        lv_obj_set_pos(expression_label_, kDisplayInnerLeftPadding, 8);
-        lv_obj_set_size(expression_label_, expression_area_width_, 14);
-        lv_obj_set_style_text_font(expression_label_, &lv_font_montserrat_12, 0);
+        lv_obj_set_pos(expression_label_, kDisplayInnerLeftPadding, kDisplayLabelY);
+        lv_obj_set_size(expression_label_, expression_area_width_, kDisplayLabelHeight);
+        lv_obj_set_style_text_font(expression_label_, &lv_font_montserrat_16, 0);
         lv_obj_set_style_text_color(expression_label_, color_hex(0xD8D8D8), 0);
         lv_label_set_long_mode(expression_label_, LV_LABEL_LONG_CLIP);
         lv_label_set_text(expression_label_, "");
 
         equals_label_ = lv_label_create(display_panel_);
-        lv_obj_set_pos(equals_label_, equals_area_x_, 10);
-        lv_obj_set_style_text_font(equals_label_, &lv_font_montserrat_12, 0);
+        lv_obj_set_pos(equals_label_, equals_area_x_, kDisplayLabelY);
+        lv_obj_set_style_text_font(equals_label_, &lv_font_montserrat_16, 0);
         lv_obj_set_style_text_color(equals_label_, color_hex(0x9E9E9E), 0);
         lv_label_set_text(equals_label_, "=");
 
         result_label_ = lv_label_create(display_panel_);
-        lv_obj_set_pos(result_label_, result_area_x_, 8);
-        lv_obj_set_size(result_label_, result_area_width_, 18);
+        lv_obj_set_pos(result_label_, result_area_x_, kDisplayLabelY);
+        lv_obj_set_size(result_label_, result_area_width_, kDisplayLabelHeight);
         lv_obj_set_style_text_align(result_label_, LV_TEXT_ALIGN_RIGHT, 0);
-        lv_obj_set_style_text_font(result_label_, &lv_font_montserrat_18, 0);
+        lv_obj_set_style_text_font(result_label_, &lv_font_montserrat_16, 0);
         lv_obj_set_style_text_color(result_label_, color_hex(0xF4F4F4), 0);
         lv_label_set_text(result_label_, "0");
     }
@@ -267,6 +269,8 @@ private:
                 lv_obj_set_style_shadow_width(button, 0, 0);
                 lv_obj_set_style_outline_pad(button, 1, 0);
                 lv_obj_add_event_cb(button, handle_button_click, LV_EVENT_CLICKED, &context);
+                lv_obj_add_event_cb(button, handle_button_long_press, LV_EVENT_LONG_PRESSED,
+                                    &context);
 
                 lv_obj_t *label = lv_label_create(button);
                 label_matrix_[row][col] = label;
@@ -292,6 +296,8 @@ private:
         lv_obj_add_flag(focus_overlay_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_clear_flag(focus_overlay_, LV_OBJ_FLAG_CLICK_FOCUSABLE);
         lv_obj_add_event_cb(focus_overlay_, handle_focus_overlay_click, LV_EVENT_CLICKED, this);
+        lv_obj_add_event_cb(focus_overlay_, handle_focus_overlay_long_press,
+                            LV_EVENT_LONG_PRESSED, this);
 
         focus_overlay_label_ = lv_label_create(focus_overlay_);
         lv_obj_set_width(focus_overlay_label_, button_width_ - 4);
@@ -387,7 +393,7 @@ private:
         const std::string result = current_result_text();
         update_display_layout(result);
         lv_point_t expression_size{};
-        lv_text_get_size(&expression_size, expression.c_str(), &lv_font_montserrat_12, 0, 0,
+        lv_text_get_size(&expression_size, expression.c_str(), &lv_font_montserrat_16, 0, 0,
                          LV_COORD_MAX, LV_TEXT_FLAG_NONE);
         lv_label_set_long_mode(expression_label_,
                                show_expression &&
@@ -397,10 +403,10 @@ private:
         lv_label_set_text(expression_label_, expression.c_str());
         if (show_expression) {
             lv_obj_clear_flag(equals_label_, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_pos(result_label_, result_area_x_, 8);
+            lv_obj_set_pos(result_label_, result_area_x_, kDisplayLabelY);
         } else {
             lv_obj_add_flag(equals_label_, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_set_pos(result_label_, result_area_x_, 7);
+            lv_obj_set_pos(result_label_, result_area_x_, kDisplayLabelY);
         }
 
         lv_label_set_text(result_label_, result.c_str());
@@ -496,7 +502,7 @@ private:
 
     lv_coord_t max_result_area_width() const
     {
-        const lv_coord_t equals_width = measure_text_width("=", &lv_font_montserrat_12);
+        const lv_coord_t equals_width = measure_text_width("=", &lv_font_montserrat_16);
         const lv_coord_t width = kDisplayWidth - kDisplayInnerLeftPadding -
                                  kDisplayInnerRightPadding - (kDisplayMiddleGap * 2) -
                                  equals_width;
@@ -558,8 +564,7 @@ private:
     const lv_font_t *font_for_result_text(const std::string &text,
                                           lv_coord_t available_width) const
     {
-        static const std::array<const lv_font_t *, 6> kFonts = {
-            &lv_font_montserrat_18,
+        static const std::array<const lv_font_t *, 5> kFonts = {
             &lv_font_montserrat_16,
             &lv_font_montserrat_14,
             &lv_font_montserrat_12,
@@ -580,7 +585,7 @@ private:
 
     void update_display_layout(const std::string &result_text)
     {
-        const lv_coord_t equals_width = measure_text_width("=", &lv_font_montserrat_12);
+        const lv_coord_t equals_width = measure_text_width("=", &lv_font_montserrat_16);
         const lv_coord_t max_width = max_result_area_width();
         const lv_font_t *result_font = font_for_result_text(result_text, max_width);
         lv_coord_t desired_width =
@@ -603,14 +608,14 @@ private:
         }
 
         if (expression_label_ != nullptr) {
-            lv_obj_set_size(expression_label_, expression_area_width_, 14);
+            lv_obj_set_size(expression_label_, expression_area_width_, kDisplayLabelHeight);
         }
         if (equals_label_ != nullptr) {
-            lv_obj_set_pos(equals_label_, equals_area_x_, 10);
+            lv_obj_set_pos(equals_label_, equals_area_x_, kDisplayLabelY);
         }
         if (result_label_ != nullptr) {
-            lv_obj_set_pos(result_label_, result_area_x_, 8);
-            lv_obj_set_size(result_label_, result_area_width_, 18);
+            lv_obj_set_pos(result_label_, result_area_x_, kDisplayLabelY);
+            lv_obj_set_size(result_label_, result_area_width_, kDisplayLabelHeight);
             lv_obj_set_style_text_font(result_label_, result_font, 0);
         }
     }
@@ -1121,6 +1126,16 @@ private:
         refresh_focus();
     }
 
+    void apply_button_long_press(int row, int col)
+    {
+        const ButtonSpec &spec = kButtonSpecs[row][col];
+        if (spec.action == ActionType::Backspace) {
+            selected_row_ = row;
+            selected_col_ = col;
+            apply_action_shortcut(ActionType::ClearAll);
+        }
+    }
+
     void apply_action_shortcut(ActionType action)
     {
         for (int row = 0; row < kRows; ++row) {
@@ -1193,14 +1208,16 @@ private:
             move_selection(1, 0);
             return;
         case LV_KEY_ENTER:
-            commit_current_expression();
-            play_feedback_for_printable_key('=');
+            apply_button(selected_row_, selected_col_);
             return;
         case LV_KEY_BACKSPACE:
         case LV_KEY_DEL:
             apply_action_shortcut(ActionType::Backspace);
             return;
         case LV_KEY_ESC:
+            apply_action_shortcut(ActionType::ClearAll);
+            return;
+        case LV_KEY_HOME:
             app_request_quit();
             return;
         case LV_KEY_PREV:
@@ -1228,6 +1245,14 @@ private:
         }
     }
 
+    static void handle_button_long_press(lv_event_t *event)
+    {
+        auto *context = static_cast<ButtonContext *>(lv_event_get_user_data(event));
+        if (context != nullptr && context->app != nullptr) {
+            context->app->apply_button_long_press(context->row, context->col);
+        }
+    }
+
     static void handle_focus_overlay_click(lv_event_t *event)
     {
         auto *self = static_cast<CalculatorApp *>(lv_event_get_user_data(event));
@@ -1235,6 +1260,15 @@ private:
             return;
         }
         self->apply_button(self->selected_row_, self->selected_col_);
+    }
+
+    static void handle_focus_overlay_long_press(lv_event_t *event)
+    {
+        auto *self = static_cast<CalculatorApp *>(lv_event_get_user_data(event));
+        if (self == nullptr) {
+            return;
+        }
+        self->apply_button_long_press(self->selected_row_, self->selected_col_);
     }
 
     static void handle_root_event(lv_event_t *event)

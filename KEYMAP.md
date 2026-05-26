@@ -18,10 +18,11 @@ C     sin   cos   +     -     /     *     ^     (     )     Rad
 - `1` to `0`: enter digits.
 - `.`: enter decimal point.
 - `+`, `-`, `*`, `/`, `^`, `(`, `)`: enter operators or parentheses if the sticker modifier layer emits those characters.
-- `Backspace` or `Del`: delete the previous token.
-- `Enter` or `OK`: evaluate the expression.
-- `Space`: press the currently highlighted on-screen button.
-- `Esc`: exit the calculator program.
+- `Backspace`, `Del`, or the on-screen `Del` button: delete the previous token. Hold it to clear the whole expression.
+- `Enter`, `OK`, or `Space`: press the currently highlighted on-screen button.
+- `=`: evaluate the expression directly.
+- `Esc`: clear the whole expression.
+- `Home`: exit the calculator program.
 - Arrow keys: move the on-screen focus.
 - `PageUp` / `PageDown`: browse calculation history.
 

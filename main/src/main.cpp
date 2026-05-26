@@ -99,6 +99,11 @@ STAILQ_HEAD(key_queue_t, queued_key);
 static struct key_queue_t g_key_queue = STAILQ_HEAD_INITIALIZER(g_key_queue);
 static pthread_mutex_t g_key_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static bool evdev_code_is_delete_key(uint16_t code)
+{
+    return code == KEY_BACKSPACE || code == KEY_DELETE;
+}
+
 static uint32_t evdev_key_to_lv_key(uint16_t code)
 {
     switch (code) {
@@ -114,8 +119,9 @@ static uint32_t evdev_key_to_lv_key(uint16_t code)
     case KEY_KPENTER:
         return LV_KEY_ENTER;
     case KEY_ESC:
-    case KEY_HOME:
         return LV_KEY_ESC;
+    case KEY_HOME:
+        return LV_KEY_HOME;
     case KEY_BACKSPACE:
         return LV_KEY_BACKSPACE;
     case KEY_DELETE:
@@ -233,6 +239,8 @@ static void *keyboard_read_thread(void *arg)
         return NULL;
     }
 
+    bool delete_long_clear_sent = false;
+
     while (!app_should_quit()) {
         struct input_event event {};
         ssize_t got = read(fd, &event, sizeof(event));
@@ -242,9 +250,26 @@ static void *keyboard_read_thread(void *arg)
             }
             break;
         }
-        if (got != sizeof(event) || event.type != EV_KEY || event.value == 0) {
+        if (got != sizeof(event) || event.type != EV_KEY) {
             continue;
         }
+
+        if (evdev_code_is_delete_key(event.code)) {
+            if (event.value == 0) {
+                delete_long_clear_sent = false;
+                continue;
+            }
+            if (event.value == 2) {
+                if (!delete_long_clear_sent) {
+                    enqueue_key('C', 1);
+                    delete_long_clear_sent = true;
+                }
+                continue;
+            }
+        } else if (event.value == 0) {
+            continue;
+        }
+
         enqueue_key(evdev_key_to_lv_key(event.code), 1);
     }
 
