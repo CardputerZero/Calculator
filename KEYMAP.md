@@ -1,6 +1,6 @@
 # Calculator Keymap
 
-This layout mirrors the Cardputer Zero sticker as much as possible while keeping the system keys available.
+This layout mirrors the CardputerZero sticker as much as possible while keeping the system keys available.
 
 ## Screen Button Layout
 

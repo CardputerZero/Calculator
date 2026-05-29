@@ -1,6 +1,6 @@
 # CardputerZero Calculator
 
-LVGL-based calculator app for M5Stack Cardputer Zero.
+LVGL-based calculator app for M5Stack CardputerZero.
 
 ## Repository Layout
 
