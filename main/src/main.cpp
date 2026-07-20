@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "ui/ui.h"
 #include "calculator_app.h"
+#include "calculator_keymap.h"
 #include <cstring>
 
 #if LV_USE_SDL
@@ -106,6 +107,11 @@ static bool evdev_code_is_delete_key(uint16_t code)
 
 static uint32_t evdev_key_to_lv_key(uint16_t code)
 {
+    uint32_t mapped_character = 0;
+    if (calculator::tca8418_keycode_lookup(code, &mapped_character)) {
+        return mapped_character;
+    }
+
     switch (code) {
     case KEY_UP:
         return LV_KEY_UP;
@@ -182,30 +188,6 @@ static uint32_t evdev_key_to_lv_key(uint16_t code)
         return '*';
     case KEY_KPPLUS:
         return '+';
-    case 183:
-        return '!';
-    case 187:
-        return '%';
-    case 188:
-        return '^';
-    case 190:
-        return '*';
-    case 191:
-        return '(';
-    case 192:
-        return ')';
-    case 195:
-        return '+';
-    case 196:
-        return '-';
-    case 197:
-        return '/';
-    case 209:
-        return '=';
-    case 231:
-        return ',';
-    case 232:
-        return '.';
     default:
         return 0;
     }
@@ -305,6 +287,8 @@ static void lv_linux_indev_init(void)
         touch = lv_evdev_create(LV_INDEV_TYPE_POINTER, mouse_device);
 
     if (keyboard_device) {
+        calculator::load_tca8418_keymap(calculator::tca8418_keymap_path());
+
         pthread_t thread_id;
         pthread_create(&thread_id, NULL, keyboard_read_thread, const_cast<char *>(keyboard_device));
         pthread_detach(thread_id);

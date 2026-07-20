@@ -6,9 +6,12 @@ with open(env["PROJECT_TOOL_S"]) as f:
 
 
 SRCS = Glob("src/*.c*")
+SRCS = list(filter(lambda src: os.path.basename(str(src)) != "calculator_keymap.cpp", SRCS))
 INCLUDE = [ADir("."), ADir("include")]
 PRIVATE_INCLUDE = []
 REQUIREMENTS = ["lvgl_component", "pthread"]
+if "CONFIG_V9_5_LV_USE_EVDEV" in os.environ:
+    SRCS += Glob("src/calculator_keymap.cpp")
 STATIC_LIB = []
 DYNAMIC_LIB = []
 DEFINITIONS = []

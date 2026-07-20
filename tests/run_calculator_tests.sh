@@ -6,6 +6,7 @@ PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build"
 ENGINE_TEST_BIN="${BUILD_DIR}/calculator_engine_test"
 INPUT_TEST_BIN="${BUILD_DIR}/calculator_input_test"
+KEYMAP_TEST_BIN="${BUILD_DIR}/calculator_keymap_test"
 
 mkdir -p "${BUILD_DIR}"
 
@@ -21,5 +22,12 @@ c++ -std=c++17 -Wall -Wextra -pedantic \
     "${SCRIPT_DIR}/calculator_input_test.cpp" \
     -o "${INPUT_TEST_BIN}"
 
+c++ -std=c++17 -Wall -Wextra -pedantic \
+    -I"${PROJECT_DIR}/main/include" \
+    "${PROJECT_DIR}/main/src/calculator_keymap.cpp" \
+    "${SCRIPT_DIR}/calculator_keymap_test.cpp" \
+    -o "${KEYMAP_TEST_BIN}"
+
 "${ENGINE_TEST_BIN}"
 "${INPUT_TEST_BIN}"
+"${KEYMAP_TEST_BIN}"
