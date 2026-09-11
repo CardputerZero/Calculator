@@ -1,0 +1,25 @@
+{
+  "name": "Calculator",
+  "package": "calculator",
+  "package_name": "calculator",
+  "version": "0.1.0",
+  "app_name": "Calculator",
+  "bin_name": "Calculator",
+  "description": "Simple CardputerZero calculator with an iOS-style source formula line.",
+  "maintainer": "Zhu Zhe <zhuzhe1983@gmail.com>",
+  "homepage": "https://github.com/CardputerZero",
+  "runtime": "legacy-deb-only",
+  "lvgl_version": "9.5",
+  "caps": ["keyboard"],
+  "store": {
+    "summary": "Simple CardputerZero calculator with an iOS-style source formula line.",
+    "categories": ["Productivity", "Utilities"],
+    "license": "MIT",
+    "source_repo": "https://github.com/CardputerZero",
+    "icon": "share/images/calculator.png",
+    "screenshots": [],
+    "permissions": {
+      "keyboard_input": true
+    }
+  }
+}

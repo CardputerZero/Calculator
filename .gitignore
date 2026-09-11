@@ -1,0 +1,4 @@
+/build/
+/dist/
+/static_lib
+*.DS_Store
