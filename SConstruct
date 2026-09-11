@@ -48,6 +48,7 @@ env = SConscript(
 )
 
 if "CardputerZero" in os.environ:
+    update = False
     if not os.path.exists(static_lib):
         update = True
     elif os.path.islink(static_lib):
