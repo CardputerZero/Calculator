@@ -102,6 +102,30 @@ public:
         show_help();
     }
 
+    void set_debug_view(const std::string &view)
+    {
+        if (view == "entry") {
+            expression_ = "12+34.5";
+            refresh();
+        } else if (view == "result") {
+            source_text_ = "1+2";
+            main_text_ = "3";
+            last_result_ = "3";
+            expression_ = "3";
+            just_evaluated_ = true;
+            refresh();
+        } else if (view == "continued") {
+            source_text_ = "1+2";
+            main_text_ = "3*2";
+            last_result_ = "3";
+            expression_ = "3*2";
+            just_evaluated_ = false;
+            refresh();
+        } else if (view == "help") {
+            show_help();
+        }
+    }
+
 private:
     void configure_label(lv_obj_t *label, int32_t y, int32_t height,
                          const lv_font_t *font, uint32_t color)
@@ -416,7 +440,7 @@ private:
         lv_obj_t *footer = lv_label_create(card);
         lv_obj_set_style_text_font(footer, &jetbrains_mono_14, 0);
         lv_obj_set_style_text_color(footer, lv_color_hex(0x8a8a90), 0);
-        lv_label_set_text(footer, "F/X or Fn+F/X: scroll / ESC: close");
+        lv_label_set_text(footer, "ESC: close");
         lv_obj_align(footer, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
 
         modal_ = overlay;
@@ -625,5 +649,12 @@ extern "C" void calculator_ui_show_help_for_debug(void)
 {
     if (g_calculator_view != nullptr) {
         g_calculator_view->show_help_for_debug();
+    }
+}
+
+extern "C" void calculator_ui_set_debug_view(const char *view)
+{
+    if (g_calculator_view != nullptr && view != nullptr) {
+        g_calculator_view->set_debug_view(view);
     }
 }

@@ -9,6 +9,7 @@ extern "C" {
 
 void calculator_ui_build(lv_obj_t *screen);
 void calculator_ui_show_help_for_debug(void);
+void calculator_ui_set_debug_view(const char *view);
 lv_indev_t *app_get_keyboard_indev(void);
 void app_request_quit(void);
 int app_should_quit(void);

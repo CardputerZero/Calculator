@@ -13,6 +13,14 @@ A simple CardputerZero calculator built with LVGL.
 - Black background, right-aligned white main line, gray source line, slow scrolling when long.
 - JetBrains Mono at 24 px for the main line and 20 px for the source line.
 
+## Screenshots
+
+| Input | Result |
+| --- | --- |
+| ![Input expression](docs/screenshots/entry-320x170.png) | ![Evaluated result](docs/screenshots/result-320x170.png) |
+| **Continued calculation** | **Help** |
+| ![Continued calculation](docs/screenshots/continued-320x170.png) | ![Help modal](docs/screenshots/help-320x170.png) |
+
 ## Build
 
 Run `scons` in this directory. The host defaults to the LVGL SDL backend; the

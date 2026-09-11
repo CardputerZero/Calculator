@@ -406,7 +406,10 @@ int main(void)
 
     lv_obj_t *screen = lv_obj_create(NULL);
     calculator_ui_build(screen);
-    if (getenv("CALCULATOR_SHOW_HELP") != NULL) {
+    const char *debug_view = getenv("CALCULATOR_DEBUG_VIEW");
+    if (debug_view != NULL) {
+        calculator_ui_set_debug_view(debug_view);
+    } else if (getenv("CALCULATOR_SHOW_HELP") != NULL) {
         calculator_ui_show_help_for_debug();
     }
     lv_screen_load(screen);
