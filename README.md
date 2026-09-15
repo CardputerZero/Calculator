@@ -26,10 +26,35 @@ A simple CardputerZero calculator built with LVGL.
 Run `scons` in this directory. The host defaults to the LVGL SDL backend; the
 device build enables the Linux framebuffer/evdev backends.
 
+Select a configuration with `CONFIG_DEFAULT_FILE`:
+
+| Configuration | Build host | Output target |
+| --- | --- | --- |
+| `linux_x86_sdl2_config_defaults.mk` | Linux x86_64 | Linux x86_64 SDL2 application |
+| `linux_x86_cross_cp0_config_defaults.mk` | Linux x86_64 | CardputerZero Linux ARM64 application |
+| `mac_cross_cp0_config_defaults.mk` | macOS | CardputerZero Linux ARM64 application |
+
+For a Linux SDL2 build (requires SDL2 development headers and libraries):
+
+```bash
+export CONFIG_DEFAULT_FILE=linux_x86_sdl2_config_defaults.mk
+scons -Q
+```
+
+For a macOS cross-build, install the toolchain and ensure its binaries are on `PATH`:
+
+```bash
+brew tap messense/macos-cross-toolchains
+brew install aarch64-unknown-linux-gnu
+export CONFIG_DEFAULT_FILE=mac_cross_cp0_config_defaults.mk
+scons -Q
+```
+
 ## Cross-build and deploy
 
 ```bash
-CardputerZero=1 CONFIG_REPO_AUTOMATION=1 scons -Q
+export CONFIG_DEFAULT_FILE=linux_x86_cross_cp0_config_defaults.mk
+CONFIG_REPO_AUTOMATION=1 scons -Q
 ./scripts/deploy.sh pi@192.168.199.179
 ```
 
@@ -54,4 +79,3 @@ c++ -std=c++17 -I tests/include -I main/include \
 ```
 
 tests/calculator_engine_test.cpp covers parser precedence and error handling.
-
