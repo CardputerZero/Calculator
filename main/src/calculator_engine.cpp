@@ -1,7 +1,9 @@
 #include "calculator_engine.h"
 
 #include <cmath>
+#include <iomanip>
 #include <limits>
+#include <locale>
 #include <sstream>
 
 namespace calculator {
@@ -149,22 +151,6 @@ private:
     size_t position_;
 };
 
-std::string trim_zeros(std::string text)
-{
-    const size_t dot = text.find('.');
-    if (dot != std::string::npos) {
-        size_t last = text.size();
-        while (last > dot + 1 && text[last - 1] == '0') {
-            --last;
-        }
-        if (last > dot && text[last - 1] == '.') {
-            --last;
-        }
-        text.resize(last);
-    }
-    return text;
-}
-
 }  // namespace
 
 std::string format_value(double value)
@@ -176,13 +162,14 @@ std::string format_value(double value)
         return "0";
     }
 
-    char buffer[64];
-    std::snprintf(buffer, sizeof(buffer), "%.12f", value);
-    std::string result = trim_zeros(buffer);
-    if (result == "-0") {
-        result = "0";
-    }
-    return result;
+    // digits10 is the number of significant decimal digits that a double can
+    // represent without exposing binary round-off noise. defaultfloat also
+    // switches to scientific notation when fixed notation would be unwieldy.
+    std::ostringstream stream;
+    stream.imbue(std::locale::classic());
+    stream << std::setprecision(std::numeric_limits<double>::digits10)
+           << std::defaultfloat << value;
+    return stream.str();
 }
 
 EvalResult evaluate_expression(const std::string &expression)
